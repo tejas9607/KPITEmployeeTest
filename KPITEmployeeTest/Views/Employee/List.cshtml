@@ -1,0 +1,32 @@
+﻿@model KPITEmployeeTest.Models.EmployeeViewModel
+
+@{
+    ViewBag.Title = "List";
+}
+
+<h2>List</h2>
+
+<p>
+    @Html.ActionLink("Create New", "Create")
+</p>
+@Html.TextBox("search")
+
+<div id="search_result">
+    @Html.Action("SearchEmployee", new { keyword = "" })
+</div>
+
+@section Scripts {
+    <script type="text/javascript">
+        $("#search").on("keyup paste", function () {
+            $.ajax({
+                type: "GET",
+                url: '@Url.Action("SearchEmployee", "Employee")' +"/?keyword="+$("#search").val(),
+                dataType: 'html',
+                contentType: 'application/html; charset=utf-8',
+                success: function (content, ajaxObj) {
+                    $("#search_result").html(content);
+                },
+            });
+        })
+    </script>
+}
