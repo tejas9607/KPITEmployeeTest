@@ -12,22 +12,18 @@ namespace EmployeeDbManagement.DataEntity
     using System;
     using System.Collections.Generic;
     
-    public partial class Employee
+    public partial class MaritalStatus
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public Employee()
+        public MaritalStatus()
         {
-            this.Locations = new HashSet<Location>();
+            this.Employees = new HashSet<Employee>();
         }
     
-        public int Id { get; set; }
-        public string Name { get; set; }
-        public int Age { get; set; }
-        public decimal Salary { get; set; }
-        public Nullable<int> MaritalStatusId { get; set; }
+        public int MaritalStatusId { get; set; }
+        public string Status { get; set; }
     
-        public virtual MaritalStatus MaritalStatu { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Location> Locations { get; set; }
+        public virtual ICollection<Employee> Employees { get; set; }
     }
 }

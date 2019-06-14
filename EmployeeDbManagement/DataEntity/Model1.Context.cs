@@ -13,10 +13,10 @@ namespace EmployeeDbManagement.DataEntity
     using System.Data.Entity;
     using System.Data.Entity.Infrastructure;
     
-    public partial class EmployeeTestEntities : DbContext
+    public partial class KPITEmployeeTestEntities : DbContext
     {
-        public EmployeeTestEntities()
-            : base("name=EmployeeTestEntities")
+        public KPITEmployeeTestEntities()
+            : base("name=KPITEmployeeTestEntities")
         {
         }
     
@@ -26,5 +26,7 @@ namespace EmployeeDbManagement.DataEntity
         }
     
         public virtual DbSet<Employee> Employees { get; set; }
+        public virtual DbSet<Location> Locations { get; set; }
+        public virtual DbSet<MaritalStatus> MaritalStatus1 { get; set; }
     }
 }

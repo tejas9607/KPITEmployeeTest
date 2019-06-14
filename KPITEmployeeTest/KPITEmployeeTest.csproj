@@ -139,7 +139,6 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\BusinessLayer.cs" />
-    <Compile Include="Models\EmployeeViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -238,6 +237,10 @@
     <ProjectReference Include="..\EmployeeDbManagement\EmployeeDbManagement.csproj">
       <Project>{a3aa7187-51cf-4f61-b57c-2eaf13a928e2}</Project>
       <Name>EmployeeDbManagement</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ViewModels\ViewModels.csproj">
+      <Project>{65421130-df5c-4ce4-95a4-be9605cbaf56}</Project>
+      <Name>ViewModels</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

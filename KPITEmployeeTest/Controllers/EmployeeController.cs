@@ -5,6 +5,8 @@ using System.Linq;
 using System.Net;
 using System.Web;
 using System.Web.Mvc;
+using ViewModels;
+
 namespace KPITEmployeeTest.Controllers
 {
 
@@ -12,8 +14,27 @@ namespace KPITEmployeeTest.Controllers
     {
         public ActionResult List()
         {
-            //IEnumerable<EmployeeViewModel> empViewModels = new BusinessLayer().GetEmployeeList();
             return View();
+        }
+
+        public ActionResult GetEmployeeList()
+        {
+            var draw = Request.Form.GetValues("draw").FirstOrDefault();
+            var start = Request.Form.GetValues("start").FirstOrDefault();
+            var length = Request.Form.GetValues("length").FirstOrDefault();
+
+            CustomFilter customFilter = new CustomFilter();
+            customFilter.streetSearchValue = Request.Form.GetValues("columns[5][search][value]").FirstOrDefault();
+            customFilter.ageSearchValue = Request.Form.GetValues("columns[1][search][value]").FirstOrDefault();
+            customFilter.salarySearchValue = Request.Form.GetValues("columns[2][search][value]").FirstOrDefault();
+
+
+            customFilter.pageSize = length != null ? Convert.ToInt32(length) : 0;
+            customFilter.skip = start != null ? Convert.ToInt32(start) : 0;
+            int recordsTotal = 0;
+
+            var data = new BusinessLayer().GetEmployeeList(customFilter,out recordsTotal);
+            return Json(new { draw = draw, recordsFiltered = recordsTotal, recordsTotal = recordsTotal, data = data });
         }
 
         public ActionResult Index()
@@ -23,13 +44,16 @@ namespace KPITEmployeeTest.Controllers
 
         private List<SelectListItem> GetMaritalStatus()
         {
-            return new List<SelectListItem>
-            {
-                new SelectListItem{Text="Single",Value="Single"},
-                new SelectListItem{Text="Married",Value="Married"},
-                new SelectListItem{Text="Divorced",Value="Divorced"},
-                new SelectListItem{Text="Widowed",Value="Widowed"},
-            };
+            var maritalStatusList = new BusinessLayer().GetMaritalStatusList();
+
+
+            List<SelectListItem> maritalStatusSelectList = (from item in maritalStatusList
+                                                            select new SelectListItem
+                                                            {
+                                                                Text = item.Status,
+                                                                Value = item.MaritalStatusId.ToString()
+                                                            }).ToList();
+            return maritalStatusSelectList;
         }
         [HttpGet]
         public ActionResult Create()
@@ -45,7 +69,7 @@ namespace KPITEmployeeTest.Controllers
             if (!ModelState.IsValid)
                 return View(employeeViewModel);
 
-            if(new BusinessLayer().IsEmployeeExist(employeeViewModel.Name))
+            if (new BusinessLayer().IsEmployeeExist(employeeViewModel.Name))
             {
                 ModelState.AddModelError("Name", "Employee name already exists");
                 return View(employeeViewModel);
@@ -60,19 +84,28 @@ namespace KPITEmployeeTest.Controllers
             try
             {
                 var data = new BusinessLayer().Search(keyword);
-                return PartialView(data);
+                var jsonFormat = Json(new { data = data }, JsonRequestBehavior.AllowGet);
+                return jsonFormat;
+                // return PartialView(data);
             }
-            catch
+            catch (Exception ex)
             {
-                 return PartialView("Error");
+                return PartialView("Error");
             }
         }
 
         [HttpGet]
-        public ActionResult Delete(int id)
+        public bool Delete(int id)
         {
-            new BusinessLayer().Delete(id);
-            return RedirectToAction("List");
+            try
+            {
+                new BusinessLayer().Delete(id);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
         }
 
     }

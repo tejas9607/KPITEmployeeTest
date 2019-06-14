@@ -1,32 +1,167 @@
-﻿@model KPITEmployeeTest.Models.EmployeeViewModel
+﻿@model ViewModels.EmployeeViewModel
 
 @{
     ViewBag.Title = "List";
 }
+
+<link href="~/Content/bootstrap.css" rel="stylesheet" />
+
+<link href="https://cdn.datatables.net/1.10.15/css/dataTables.bootstrap.min.css" rel="stylesheet" />
+<link href="https://cdn.datatables.net/responsive/2.1.1/css/responsive.bootstrap.min.css" rel="stylesheet" />
+
 
 <h2>List</h2>
 
 <p>
     @Html.ActionLink("Create New", "Create")
 </p>
-@Html.TextBox("search")
+@*@Html.TextBox("search")*@
+
+
 
 <div id="search_result">
-    @Html.Action("SearchEmployee", new { keyword = "" })
+    @*@Html.Action("SearchEmployee", new { keyword = "" })*@
+
+    <div class="container">
+        <br />
+        <div style="width:100%; margin:0 auto;">
+            <div style="background-color:#f5f5f5; padding:20px">
+                <h3>Search Panel</h3>
+                <table>
+                    <tbody>
+                        <tr>
+                            <td>Street</td>
+                            <td><input type="text" id="txtStreet" /></td>
+                            <td>Age</td>
+                            <td><input type="number" id="txtAge" /></td>
+                            <td>Salary</td>
+                            <td><input type="number" id="txtSalary" /></td>
+                            <td>
+                                <input type="button" value="Search" id="btnSearch" />
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <table id="demoGrid" class="table table-striped table-bordered dt-responsive nowrap" width="100%" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Age</th>
+                        <th>Salary</th>
+                        <th>Marital Status</th>
+                        <th>Street</th>
+                        <th>City</th>
+                        <th>State</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
 </div>
 
 @section Scripts {
-    <script type="text/javascript">
-        $("#search").on("keyup paste", function () {
-            $.ajax({
-                type: "GET",
-                url: '@Url.Action("SearchEmployee", "Employee")' +"/?keyword="+$("#search").val(),
-                dataType: 'html',
-                contentType: 'application/html; charset=utf-8',
-                success: function (content, ajaxObj) {
-                    $("#search_result").html(content);
+    @*<script type="text/javascript">
+            $("#search").on("keyup paste", function () {
+                $.ajax({
+                    type: "GET",
+                    url: '@Url.Action("SearchEmployee", "Employee")' +"/?keyword="+$("#search").val(),
+                    dataType: 'html',
+                    contentType: 'application/html; charset=utf-8',
+                    success: function (content, ajaxObj) {
+                        $("#search_result").html(content);
+                    },
+                });
+            })
+        </script>*@
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.15/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.15/js/dataTables.bootstrap4.min.js "></script>
+    <script>
+        $(document).ready(function () {
+            $('#demoGrid').dataTable({
+
+                "processing": true, // for show progress bar
+                "serverSide": true, // for process server side
+                "filter": true, // this is for disable filter (search box)
+                "orderMulti": false, // for disable multiple column at once
+                "pageLength": 10,
+                "ordering": false,
+                "dom": '<"top"i>rt<"bottom"lp><"clear">',
+                "ajax": {
+                    "url": "/Employee/GetEmployeeList/",
+                    "type": "POST",
+                    "datatype": "json"
                 },
+                "columns": [
+                    { "data": "Name", "name": "Name", "autoWidth": true },
+                    { "data": "Age", "name": "Age", "autoWidth": true },
+                    { "data": "Salary", "title": "Salary", "name": "Salary", "autoWidth": true },
+                    { "data": "MaritalStatus", "name": "MaritalStatus", "autoWidth": true },
+                    { "data": "Street", "name": "Street", "autoWidth": true },
+                    { "data": "City", "name": "City", "autoWidth": true },
+                    { "data": "State", "name": "State", "autoWidth": true },
+                    {
+                        mRender: function (data, type, row) {
+                            return "<a href='#' class='btn btn-danger' onclick=DeleteData('" + row.Id + "'); >Delete</a>";
+                        }
+                    }
+                ]
             });
-        })
+
+            //Apply Custom search on jQuery DataTables here
+            oTable = $('#demoGrid').DataTable();
+            $('#btnSearch').click(function () {
+                oTable.columns(5).search($('#txtStreet').val().trim());
+                oTable.columns(1).search($('#txtAge').val().trim());
+                oTable.columns(2).search($('#txtSalary').val().trim());
+                oTable.draw();
+            });
+        });
+
+    </script>
+
+    <script type="text/javascript">
+        function DeleteData(CustomerID) {
+            alert(CustomerID);
+            var url = '@Url.Content("~/")' + "Employee/Delete";
+            $.get(url, { id: CustomerID }, function (data) {
+            if (data) {
+                alert("Delete Employee !");
+                oTable = $('#demoGrid').DataTable();
+                oTable.draw();
+            }
+            else {
+                alert("Something Went Wrong!");
+            }
+        });
+    }
+                                        //ConfirmDialog('Are you sure');
+
+                                        //function ConfirmDialog(message) {
+                                        //    $('<div></div>').appendTo('body')
+                                        //        .html('<div><h6>' + message + '?</h6></div>')
+                                        //        .dialog({
+                                        //            modal: true, title: 'Delete message', zIndex: 10000, autoOpen: true,
+                                        //            width: 'auto', resizable: false,
+                                        //            buttons: {
+                                        //                Yes: function () {
+                                        //                    $('body').append('<h1>Confirm Dialog Result: <i>Yes</i></h1>');
+
+                                        //                    $(this).dialog("close");
+                                        //                },
+                                        //                No: function () {
+                                        //                    $('body').append('<h1>Confirm Dialog Result: <i>No</i></h1>');
+
+                                        //                    $(this).dialog("close");
+                                        //                }
+                                        //            },
+                                        //            close: function (event, ui) {
+                                        //                $(this).remove();
+                                        //            }
+                                        //        });
+                                        //};
     </script>
 }
