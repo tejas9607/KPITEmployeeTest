@@ -12,6 +12,8 @@ namespace ViewModels
         private string _logFileFullName;
         public Logger()
         {
+            _logFileFullName = Environment.CurrentDirectory;
+
             _logFileFullName = Path.Combine(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location),"LogFile.txt");
         }
 

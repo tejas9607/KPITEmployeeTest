@@ -71,8 +71,6 @@ namespace KPITEmployeeTest.Models
                 int totalCount1 = 0;
                 var result = EmployeeManager.Instance.GetEmployeeList(customFilter, out totalCount1).ToList();
                 totalCount = totalCount1;
-
-                var res = totalCount / 0;
                 return result;
             }
             catch (Exception ex)
