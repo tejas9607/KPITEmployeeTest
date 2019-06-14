@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using ViewModels;
@@ -33,7 +34,7 @@ namespace KPITEmployeeTest.Controllers
             customFilter.skip = start != null ? Convert.ToInt32(start) : 0;
             int recordsTotal = 0;
 
-            var data = new BusinessLayer().GetEmployeeList(customFilter,out recordsTotal);
+            var data = new BusinessLayer().GetEmployeeList(customFilter, out recordsTotal);
             return Json(new { draw = draw, recordsFiltered = recordsTotal, recordsTotal = recordsTotal, data = data });
         }
 
@@ -97,15 +98,7 @@ namespace KPITEmployeeTest.Controllers
         [HttpGet]
         public bool Delete(int id)
         {
-            try
-            {
-                new BusinessLayer().Delete(id);
-                return true;
-            }
-            catch
-            {
-                return false;
-            }
+            return new BusinessLayer().Delete(id);
         }
 
     }

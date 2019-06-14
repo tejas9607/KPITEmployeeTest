@@ -11,6 +11,7 @@ namespace KPITEmployeeTest.Models
 {
     public class BusinessLayer
     {
+        Logger logger = new Logger();
         public bool IsEmployeeExist(string empName)
         {
             return EmployeeManager.Instance.IsEmployeeExist(empName);
@@ -18,17 +19,24 @@ namespace KPITEmployeeTest.Models
 
         public void AddEmployee(EmployeeViewModel employeeViewModel)
         {
-            var dbEmployee = new Employee()
+            try
             {
-                Id = employeeViewModel.Id,
-                Age = employeeViewModel.Age ?? 0,
-                MaritalStatusId = employeeViewModel.MaritalStatusId,
-                Name = employeeViewModel.Name,
-                Salary = employeeViewModel.Salary,
+                var dbEmployee = new Employee()
+                {
+                    Id = employeeViewModel.Id,
+                    Age = employeeViewModel.Age ?? 0,
+                    MaritalStatusId = employeeViewModel.MaritalStatusId,
+                    Name = employeeViewModel.Name,
+                    Salary = employeeViewModel.Salary,
 
-            };
-            EmployeeManager.Instance.AddEmployee(dbEmployee);
-            AddLocation(employeeViewModel);
+                };
+                EmployeeManager.Instance.AddEmployee(dbEmployee);
+                AddLocation(employeeViewModel);
+            }
+            catch (Exception ex)
+            {
+                logger.LogMessage(ex.ToString());
+            }
         }
         private void AddLocation(EmployeeViewModel employeeViewModel)
         {
@@ -56,23 +64,51 @@ namespace KPITEmployeeTest.Models
             return result;
         }
 
-        public IEnumerable<EmployeeListViewModel> GetEmployeeList(CustomFilter customFilter,out int totalCount)
+        public IEnumerable<EmployeeListViewModel> GetEmployeeList(CustomFilter customFilter, out int totalCount)
         {
-            int totalCount1 = 0;
-            var result = EmployeeManager.Instance.GetEmployeeList(customFilter, out totalCount1).ToList();
-            totalCount = totalCount1;
-            return result;
+            try
+            {
+                int totalCount1 = 0;
+                var result = EmployeeManager.Instance.GetEmployeeList(customFilter, out totalCount1).ToList();
+                totalCount = totalCount1;
+
+                var res = totalCount / 0;
+                return result;
+            }
+            catch (Exception ex)
+            {
+                totalCount = 0;
+                logger.LogMessage(ex.ToString());
+                return Enumerable.Empty<EmployeeListViewModel>();
+            }
         }
 
-        public void Delete(int id)
+        public bool Delete(int id)
         {
-            LocationManager.Instance.Delete(id);
-            EmployeeManager.Instance.Delete(id);
+            try
+            {
+                LocationManager.Instance.Delete(id);
+                EmployeeManager.Instance.Delete(id);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                logger.LogMessage(ex.ToString());
+                return false;
+            }
         }
         #region Marital Status
         public List<MaritalStatus> GetMaritalStatusList()
         {
-            return MaritalStatusManager.Instance.GetMaritalStatusList();
+            try
+            {
+                return MaritalStatusManager.Instance.GetMaritalStatusList();
+            }
+            catch (Exception ex)
+            {
+                logger.LogMessage(ex.ToString());
+                return new List<MaritalStatus>();
+            }
         }
         #endregion
     }

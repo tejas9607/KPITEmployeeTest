@@ -46,6 +46,7 @@
     <Compile Include="EmployeeViewModel.cs" />
     <Compile Include="EmployeeListViewModel.cs" />
     <Compile Include="LocationViewModel.cs" />
+    <Compile Include="Logger.cs" />
     <Compile Include="MaritalStatusViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
